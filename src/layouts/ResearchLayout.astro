@@ -1,0 +1,130 @@
+---
+interface Props {
+  title: string;
+  authors: string[];
+  abstract: string;
+  date: Date;
+  format?: 'ieee' | 'acm-sig' | 'acm-sigchi';
+  tags?: string[];
+}
+
+const {
+  title,
+  authors,
+  abstract,
+  date,
+  format = 'ieee',
+  tags = [],
+} = Astro.props;
+
+const formatLabel: Record<string, string> = {
+  'ieee': 'IEEE',
+  'acm-sig': 'ACM SIG',
+  'acm-sigchi': 'ACM SIGCHI',
+};
+
+const cssFile = `/parkinsons/styles/pubcss-${format}.css`;
+const resolvedFormatLabel = formatLabel[format] ?? 'Unknown Format';
+const formattedDate = date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={abstract} />
+    <link rel="icon" type="image/svg+xml" href="/parkinsons/favicon.svg" />
+    <link rel="stylesheet" href={cssFile} />
+    <title>{title}</title>
+    <style>
+      @media screen {
+        body {
+          background: #e0e0e0;
+          padding: 2rem;
+        }
+        .paper-container {
+          background: #fff;
+          max-width: 8.5in;
+          margin: 0 auto;
+          padding: 0.75in 0.62in 1in;
+          box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+          min-height: 11in;
+        }
+      }
+      .back-link {
+        display: block;
+        margin-bottom: 1.5rem;
+        color: #1a3a5c;
+        font-family: system-ui, sans-serif;
+        font-size: 0.875rem;
+        text-decoration: none;
+      }
+      .back-link:hover {
+        text-decoration: underline;
+      }
+      .paper-meta {
+        font-family: system-ui, sans-serif;
+        font-size: 0.75rem;
+        color: #666;
+        margin-bottom: 0.5rem;
+        column-span: all;
+      }
+      .tag {
+        display: inline-block;
+        background: #e8f0fe;
+        color: #1a3a5c;
+        border-radius: 4px;
+        padding: 0.1em 0.5em;
+        margin: 0.15em;
+        font-size: 0.75rem;
+        font-family: system-ui, sans-serif;
+      }
+      .tags-list {
+        column-span: all;
+        margin-bottom: 1rem;
+      }
+      .format-badge {
+        display: inline-block;
+        background: #1a3a5c;
+        color: #fff;
+        border-radius: 4px;
+        padding: 0.2em 0.6em;
+        font-size: 0.7rem;
+        font-family: system-ui, sans-serif;
+        margin-bottom: 0.5rem;
+        column-span: all;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="paper-container">
+      <a class="back-link" href="/parkinsons/research/">&larr; Back to Research</a>
+      <span class="format-badge">{resolvedFormatLabel}</span>
+      <div class="paper-meta">Published: {formattedDate}</div>
+      {tags.length > 0 && (
+        <div class="tags-list">
+          {tags.map((tag) => <span class="tag">{tag}</span>)}
+        </div>
+      )}
+
+      <header>
+        <h1 class="title counter-skip">{title}</h1>
+        <div class="authors col-span" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; font-family: system-ui, sans-serif; font-size: 0.95rem; margin: 0.5rem 0 1.5rem;">
+          {authors.map((author) => (
+            <span class="author">{author}</span>
+          ))}
+        </div>
+        <div class="abstract col-span">
+          <strong>Abstract&mdash;</strong>{abstract}
+        </div>
+      </header>
+
+      <slot />
+    </div>
+  </body>
+</html>

@@ -1,0 +1,133 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const papers = (await getCollection('research')).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+---
+
+<BaseLayout title="Research Papers | Parkinson's Disease Research">
+  <section>
+    <h1>Research Papers</h1>
+    <p>
+      All research papers published on this site are formatted using
+      <a href="https://github.com/thomaspark/pubcss" target="_blank" rel="noopener">pubcss</a>
+      CSS, which provides print-ready formatting for academic conferences and journals
+      including IEEE and ACM publication formats.
+    </p>
+
+    {papers.length === 0 ? (
+      <p>No research papers published yet.</p>
+    ) : (
+      <ul class="paper-list">
+        {papers.map((paper) => (
+          <li class="paper-card">
+            <a href={`/parkinsons/research/${paper.slug}/`}>
+              <h2>{paper.data.title}</h2>
+            </a>
+            <p class="meta">
+              <span class="format-badge">{paper.data.format.toUpperCase()}</span>
+              {paper.data.authors.join(', ')} &mdash;{' '}
+              {paper.data.date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </p>
+            <p class="abstract">{paper.data.abstract}</p>
+            {paper.data.tags.length > 0 && (
+              <div class="tags">
+                {paper.data.tags.map((tag) => (
+                  <span class="tag">{tag}</span>
+                ))}
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+</BaseLayout>
+
+<style>
+  h1 {
+    font-size: 2rem;
+    color: #1a3a5c;
+    margin-bottom: 0.5rem;
+    border-bottom: 2px solid #1a3a5c;
+    padding-bottom: 0.5rem;
+  }
+  p a {
+    color: #1a3a5c;
+  }
+  .paper-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  .paper-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: box-shadow 0.2s;
+  }
+  .paper-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  }
+  .paper-card h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+    border: none;
+    padding: 0;
+  }
+  .paper-card h2 a {
+    color: #1a3a5c;
+    text-decoration: none;
+  }
+  .paper-card h2 a:hover {
+    text-decoration: underline;
+  }
+  .meta {
+    font-size: 0.875rem;
+    color: #666;
+    margin: 0 0 0.75rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .format-badge {
+    background: #1a3a5c;
+    color: #fff;
+    border-radius: 4px;
+    padding: 0.1em 0.5em;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+  .abstract {
+    font-size: 0.9rem;
+    color: #444;
+    margin: 0 0 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  .tag {
+    background: #e8f0fe;
+    color: #1a3a5c;
+    border-radius: 4px;
+    padding: 0.15em 0.5em;
+    font-size: 0.75rem;
+  }
+</style>

@@ -1,0 +1,26 @@
+---
+import ResearchLayout from '../../layouts/ResearchLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const papers = await getCollection('research');
+  return papers.map((paper) => ({
+    params: { slug: paper.slug },
+    props: { paper },
+  }));
+}
+
+const { paper } = Astro.props;
+const { Content } = await render(paper);
+---
+
+<ResearchLayout
+  title={paper.data.title}
+  authors={paper.data.authors}
+  abstract={paper.data.abstract}
+  date={paper.data.date}
+  format={paper.data.format}
+  tags={paper.data.tags}
+>
+  <Content />
+</ResearchLayout>
